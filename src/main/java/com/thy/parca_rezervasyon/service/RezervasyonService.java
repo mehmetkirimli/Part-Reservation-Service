@@ -14,7 +14,7 @@ public class RezervasyonService
 {
   private final ParcaRepository parcaRepository;
 
-  public void reservePart(String parcaNo, int adet)
+  public synchronized void reservePart(String parcaNo, int adet)
   {
 
       Validations.requirePositive(adet, "Adet");
