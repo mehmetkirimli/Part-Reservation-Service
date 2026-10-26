@@ -23,6 +23,10 @@ public abstract class BaseEntity {   // abstract: tek başına new'lenmesin, sad
   @Column(nullable = false)
   protected boolean deleted;   // primitive boolean: null olamaz, varsayılanı false
 
+
+  @Version
+  private Long version; // JPA'nın optimistic locking mekanizması için kullanılır. Her güncellemede bu alan otomatik olarak artırılır ve böylece aynı kaydı aynı anda güncelleyen işlemler arasında çakışmaların önüne geçilir.
+
   @PrePersist   // Kayıt İLK KEZ veritabanına eklenmeden hemen önce JPA bu metodu çağırır
   protected void onCreate() {
     this.createdAt = LocalDateTime.now();
