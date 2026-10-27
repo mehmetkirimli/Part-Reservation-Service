@@ -101,8 +101,13 @@ public class RezervasyonServiceRaceConditionTest
         .as("Her thread hesaba katıldı mı?")
         .isEqualTo(threadSayisi);
 
+    assertThat(basarili.get()).as("Başarılı rezervasyon sayısııı").isLessThanOrEqualTo(5);
+    assertThat(basarili.get() + kalanStok).as("Başarılı rezervasyon sayısı + kalan stok").isEqualTo(5);
+
     assertThat(basarili.get()).as("Başarılı rezervasyon sayısı").isEqualTo(5);
     assertThat(kalanStok).as("Kalan stok").isEqualTo(0);
+
+
 
   }
 }

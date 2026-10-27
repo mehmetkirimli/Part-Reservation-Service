@@ -1,9 +1,5 @@
 package com.thy.parca_rezervasyon.service;
 
-import com.thy.parca_rezervasyon.entity.Parca;
-import com.thy.parca_rezervasyon.exception.ParcaBulunamadiException;
-import com.thy.parca_rezervasyon.exception.YetersizStokException;
-import com.thy.parca_rezervasyon.repository.ParcaRepository;
 import com.thy.parca_rezervasyon.validations.Validations;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +10,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RezervasyonService
 {
-  private final ParcaRepository parcaRepository;
+  private final StokService stokService;
   private static final int MAX_RETRY = 3;
 
   //public synchronized void reservePart(String parcaNo, int adet)
-  public void reservePart(String parcaNo, int adet)
+  public synchronized void reservePart(String parcaNo, int adet)
   {
     Validations.requirePositive(adet, "Adet");
     Validations.requireNotBlank(parcaNo, "Parça Numarası");
@@ -27,7 +23,8 @@ public class RezervasyonService
     {
       try
       {
-        justReservePart(parcaNo, adet);
+        System.out.println("Bana gelen stokService'in gerçek sınıfı: " + stokService.getClass().getName());
+        stokService.stokPart(parcaNo, adet);
         return;
       }
       catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException)
@@ -43,7 +40,6 @@ public class RezervasyonService
       }
     }
   }
-
   private void bekle(int retryCount)
   {
     try
@@ -59,20 +55,4 @@ public class RezervasyonService
       throw new RuntimeException("Thread interrupted during sleep", e);
     }
   }
-
-  private void justReservePart(String parcaNo, int adet)
-  {
-    Parca parca = parcaRepository.findByParcaNo(parcaNo).orElseThrow(() -> new ParcaBulunamadiException(parcaNo));
-
-    if (parca.getStokAdet() >= adet)
-    {
-      parca.setStokAdet(parca.getStokAdet() - adet);
-      parcaRepository.save(parca);
-    }
-    else
-    {
-      throw new YetersizStokException(parca.getParcaNo(), parca.getStokAdet(), adet);
-    }
-  }
-
 }
