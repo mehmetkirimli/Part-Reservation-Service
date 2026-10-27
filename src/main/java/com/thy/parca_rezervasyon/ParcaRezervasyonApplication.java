@@ -2,11 +2,14 @@ package com.thy.parca_rezervasyon;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
+@EnableCaching
 @SpringBootApplication
-public class ParcaRezervasyonApplication {
-
-	public static void main(String[] args) {
+public class ParcaRezervasyonApplication
+{
+	public static void main(String[] args)
+	{
 		SpringApplication.run(ParcaRezervasyonApplication.class, args);
 	}
 
