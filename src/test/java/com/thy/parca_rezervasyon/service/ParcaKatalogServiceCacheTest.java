@@ -46,4 +46,31 @@ public class ParcaKatalogServiceCacheTest
     assertThat(cachedekiKayit).as("Parça cache'e girmiş olmalı").isNotNull();
     assertThat(cachedekiKayit.get()).as("Cache'teki değer ilk çağrıyla aynı olmalı").isEqualTo(ilkCagri);
   }
+
+  @Test
+  void fiyatGuncellenincecacheTemizlenmeliVeYeniFiyatGorunmeli()
+  {
+    String parcaNo = "PGS-2000-" + UUID.randomUUID();
+    Parca parca = new Parca();
+    parca.setParcaNo(parcaNo);
+    parca.setParcaAdi("Motor Enjeksiyon Bobini");
+    parca.setBirimFiyat(new BigDecimal("2500.00"));
+    parca.setStokAdet(5);
+    parcaRepository.save(parca);
+
+    ParcaKatalogDto guncellemeOncesi = parcaKatalogService.katalogBilgisiGetir(parcaNo);
+    assertThat(guncellemeOncesi.birimFiyat()).isEqualByComparingTo("2500.00");
+
+    parcaKatalogService.fiyatGuncelle(parcaNo, new BigDecimal("3000.00"));
+
+    assertThat(cacheManager.getCache("parcaKatalog").get(parcaNo))
+        .as("Güncellemeden sonra cache kaydı silinmiş olmalı")
+        .isNull();
+
+    ParcaKatalogDto guncellemeSonrasi = parcaKatalogService.katalogBilgisiGetir(parcaNo);
+    assertThat(guncellemeSonrasi.birimFiyat())
+        .as("Teknisyen yeni fiyatı görmeli")
+        .isEqualByComparingTo("3000.00");
+  }
 }
+
