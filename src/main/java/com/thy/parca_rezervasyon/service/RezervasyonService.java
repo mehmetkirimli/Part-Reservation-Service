@@ -14,17 +14,18 @@ public class RezervasyonService
   private static final int MAX_RETRY = 3;
 
   //public synchronized void reservePart(String parcaNo, int adet)
-  public synchronized void reservePart(String parcaNo, int adet)
+  public synchronized void reservePart(String parcaNo, int adet , String idempotencyKey)
   {
     Validations.requirePositive(adet, "Adet");
     Validations.requireNotBlank(parcaNo, "Parça Numarası");
+    Validations.requireNotBlank(idempotencyKey, "Idempotency Key");
 
     for(int retryCount = 1; retryCount <= MAX_RETRY; retryCount++)
     {
       try
       {
         System.out.println("Bana gelen stokService'in gerçek sınıfı: " + stokService.getClass().getName());
-        stokService.stokPart(parcaNo, adet);
+        stokService.stokPart(parcaNo, adet,idempotencyKey);
         return;
       }
       catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException)

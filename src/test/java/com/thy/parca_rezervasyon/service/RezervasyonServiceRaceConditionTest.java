@@ -59,7 +59,7 @@ public class RezervasyonServiceRaceConditionTest
         try
         {
           baslangicKapisi.await();
-          rezervasyonService.reservePart(parcaNo, 1);
+          rezervasyonService.reservePart(parcaNo, 1,UUID.randomUUID().toString());
           basarili.incrementAndGet();
         }
         catch (YetersizStokException e)
